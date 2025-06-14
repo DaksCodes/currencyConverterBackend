@@ -32,7 +32,27 @@ app.get('/history', async(req,res)=>{
   startDate.setDate(endDate.getDate()-30);
 
    const formatDate = (d) => d.toISOString().split('T')[0];
+    app.get('/history', async(req,res)=>{
+  const{from,to}=req.query;
+  const endDate=new Date();
+  const startDate=new Date();
+  startDate.setDate(endDate.getDate()-30);
 
+   const formatDate = (d) => d.toISOString().split('T')[0];
+
+   if (from === to) {
+    const rates = {};
+    const currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+      const formattedDate = formatDate(currentDate);
+      rates[formattedDate] = { [to]: 1.0 }; // flat value of 1.0
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return res.json(rates);
+  }
+        
    try{
     const response = await axios.get(`https://api.frankfurter.app/${formatDate(startDate)}..${formatDate(endDate)}`, {
       params: {
